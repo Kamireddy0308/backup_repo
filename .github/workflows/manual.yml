@@ -1,0 +1,62 @@
+name: Backup Repos and Teams
+
+on:
+  workflow_dispatch:
+    inputs:
+      csv_file:
+        description: 'Select CSV file'
+        required: false
+        # default: 'dummy_repositories'  
+        # type: choice
+        # options:
+        #   - 'dummy_repositories'
+        #   - 'int_driving_stubs_repositories'
+        #   - 'int_repositories' 
+        #   - 'hera_repositories'
+
+jobs:
+  backup-repos-and-teams:
+    runs-on: [auto-u20-base]
+    
+    env:
+      GH_TOKEN: ${{ secrets.SYS_GH_CICID_TP_TI_DEV }}
+      ORG_NAME: vwnfz
+      REPO_CONTENT_PATH: contents
+
+    steps:
+    - name: Checkout 
+      uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+        
+    - name: Set up GitHub CLI
+      run: |
+        echo "Setting up GitHub CLI..."
+        gh --version
+        gh repo create "backup_dummy_src" --public || echo "failed to create repo"
+      env:
+        GH_HOST: github.com
+        GH_ENTERPRISE_TOKEN: ${{ secrets.SYS_GH_CICID_TP_TI_DEV }}
+        
+    # - name: Create backup repositories
+    #   # env:
+    #   #   GH_TOKEN: ${{ secrets.SYS_GH_CICID_TP_TI_DEV }}
+    #   run: |
+    #     gh auth login -h github.com --with-token "${GH_TOKEN}"
+    #     gh repo create "https://${GH_TOKEN}@git.hub.vwgroup.com/vwnfz/backup_dummy_src" --public || echo "failed to create repo"
+        
+    #     git clone --mirror --recursive --depth=1 "https://${GH_TOKEN}@git.hub.vwgroup.com/${ORG_NAME}/dummy_src.git" "backup_dummy_src"
+        
+    #     cd "backup_dummy_src"
+        
+    #     git push --mirror "https://${GH_TOKEN}@git.hub.vwgroup.com/${ORG_NAME}/backup_dummy_src.git"
+        
+    #     gh repo view "https://${GH_TOKEN}@git.hub.vwgroup.com}/${ORG_NAME}/backup_dummy_src"
+        
+    #     cd ..
+    #     rm -rf "backup_dummy_src"
+        
+    #     echo "Failed to create repository"
